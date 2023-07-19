@@ -1,6 +1,7 @@
 package com.example.VaccineBooking.Service;
 
 import com.example.VaccineBooking.DTO.requestDto.ReqGetDoseDto;
+import com.example.VaccineBooking.DTO.responseDto.ResGetDose;
 import com.example.VaccineBooking.Enum.DoseType;
 import com.example.VaccineBooking.Exeptions.DoseAlreadyTaken;
 import com.example.VaccineBooking.Exeptions.PersonNotFoundExp;
@@ -23,7 +24,7 @@ public class DoseService {
     @Autowired
     PersonRepository personRepository;
 
-    public Dose getDose1(ReqGetDoseDto reqGetDoseDto) {
+    public ResGetDose getDose1(ReqGetDoseDto reqGetDoseDto) {
 
         Optional<Person> optionalPerson = personRepository.findById(reqGetDoseDto.getPersonId());
         if(optionalPerson.isEmpty()) throw new PersonNotFoundExp("Person Not Found");
@@ -41,7 +42,43 @@ public class DoseService {
         person.getDoses().add(dose);
 
         Person savedPerson = personRepository.save(person); // if manyToOne written in person class for dose no need of this
-        return savedPerson.getDoses().get(0);
+        Dose savedDose = savedPerson.getDoses().get(0);
+
+        ResGetDose resGetDose = new ResGetDose();
+        resGetDose.setDoseType(dose.getDoseType());
+        resGetDose.setPersonName(person.getName());
+        resGetDose.setVaccinationDate(savedDose.getVaccinationDate());
+        resGetDose.setDoseId(savedDose.getDoseId());
+
+        return  resGetDose;
+    }
+    public ResGetDose getDose2(ReqGetDoseDto reqGetDoseDto) {
+
+        Optional<Person> optionalPerson = personRepository.findById(reqGetDoseDto.getPersonId());
+        if(optionalPerson.isEmpty()) throw new PersonNotFoundExp("Person Not Found");
+
+        Person person = optionalPerson.get();
+        if (!person.isDose1Taken()) throw new DoseAlreadyTaken("Take dose 1 first!");
+        if (person.isDose2Taken()) throw new DoseAlreadyTaken("Dose 2 already taken !");
+        Dose dose = new Dose();
+
+        dose.setDoseId(String.valueOf(UUID.randomUUID()));
+        dose.setDoseType(reqGetDoseDto.getDoseType());
+        dose.setPerson(person);
+
+        person.setDose2Taken(true);
+        person.getDoses().add(dose);
+
+        Person savedPerson = personRepository.save(person); // if manyToOne written in person class for dose no need of this
+        Dose savedDose = savedPerson.getDoses().get(0);
+
+        ResGetDose resGetDose = new ResGetDose();
+        resGetDose.setDoseType(dose.getDoseType());
+        resGetDose.setPersonName(person.getName());
+        resGetDose.setVaccinationDate(savedDose.getVaccinationDate());
+        resGetDose.setDoseId(savedDose.getDoseId());
+
+        return  resGetDose;
     }
 }
 

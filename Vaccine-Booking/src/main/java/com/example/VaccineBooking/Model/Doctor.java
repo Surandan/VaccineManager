@@ -5,6 +5,9 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @NoArgsConstructor
 @AllArgsConstructor
@@ -26,7 +29,10 @@ public class Doctor {
     @Column(unique = true,nullable = false)
     String email;
 
-    boolean isDose1Taken;
+    @OneToMany(mappedBy = "doctor",cascade = CascadeType.ALL)
+    List<Appointment> appointments = new ArrayList<>();
 
-    boolean isDose2Taken;
+    @ManyToOne
+    @JoinColumn
+    VaccinationCenter vaccinationCenter;
 }

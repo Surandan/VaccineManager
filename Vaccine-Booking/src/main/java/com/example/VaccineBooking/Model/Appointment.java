@@ -1,11 +1,10 @@
 package com.example.VaccineBooking.Model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.example.VaccineBooking.Enum.CenterType;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.util.Date;
 
@@ -22,7 +21,17 @@ public class Appointment {
 
     String appointmentId;
 
+    @CreationTimestamp
     Date appointmentDate;
 
-    int doseNo;
+    @Enumerated(value = EnumType.STRING)
+    CenterType centerType;
+
+    @ManyToOne
+    @JoinColumn
+    Person person;
+
+    @ManyToOne
+    @JoinColumn
+    Doctor doctor;
 }

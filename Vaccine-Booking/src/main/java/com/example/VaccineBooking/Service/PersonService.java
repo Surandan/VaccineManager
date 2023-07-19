@@ -2,6 +2,7 @@ package com.example.VaccineBooking.Service;
 
 import com.example.VaccineBooking.DTO.requestDto.ReqAddPersonDto;
 import com.example.VaccineBooking.DTO.responseDto.ResAddPersonDto;
+import com.example.VaccineBooking.Exeptions.PersonNotFoundExp;
 import com.example.VaccineBooking.Model.Person;
 import com.example.VaccineBooking.Repository.PersonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,5 +32,13 @@ public class PersonService {
 
         return resAddPersonDto;
 
+    }
+
+    public String updateEmail(String oldEmail, String newEmail) {
+        Person person = personRepository.findByEmail(oldEmail);
+        if(person == null) throw new PersonNotFoundExp("Email id doesn't exists!");
+        person.setEmail(newEmail);
+        personRepository.save(person);
+        return "Email id has been updated!";
     }
 }
